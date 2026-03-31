@@ -684,16 +684,32 @@ btnConfirmar.addEventListener('click', function(e) {
   btnConfirmar.disabled = true;
   btnConfirmar.textContent = 'ENVIANDO...';
 
-  // Send to Google Sheets
-  fetch('https://script.google.com/macros/s/AKfycbxQfQCiHR1UQesQCNrYokPKTnSBtFGywrfXvsVMrU8Q89RpCPxQOs3y64yBFQaYTkcB/exec', {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      nome: nomeInput.value.trim(),
-      whatsapp: whatsInput.value.trim()
-    })
-  }).catch(function() {});
+  // Send to Google Sheets via hidden form + iframe
+  var iframe = document.createElement('iframe');
+  iframe.name = 'sheets-iframe';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://script.google.com/macros/s/AKfycbxQfQCiHR1UQesQCNrYokPKTnSBtFGywrfXvsVMrU8Q89RpCPxQOs3y64yBFQaYTkcB/exec';
+  form.target = 'sheets-iframe';
+
+  var inputNome = document.createElement('input');
+  inputNome.type = 'hidden';
+  inputNome.name = 'nome';
+  inputNome.value = nomeInput.value.trim();
+  form.appendChild(inputNome);
+
+  var inputWhats = document.createElement('input');
+  inputWhats.type = 'hidden';
+  inputWhats.name = 'whatsapp';
+  inputWhats.value = whatsInput.value.trim();
+  form.appendChild(inputWhats);
+
+  document.body.appendChild(form);
+  form.submit();
+  setTimeout(function() { form.remove(); iframe.remove(); }, 5000);
 
   // Push data to dataLayer
   window.dataLayer = window.dataLayer || [];
