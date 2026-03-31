@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunidade IBB — Instituto Brasileiro de BESS</title>
+<meta name="description" content="Entre para a comunidade exclusiva do Instituto Brasileiro de BESS. Conecte-se com profissionais e especialistas do setor de armazenamento de energia.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Comunidade IBB — Instituto Brasileiro de BESS">
+<meta property="og:description" content="Entre para a comunidade exclusiva do Instituto Brasileiro de BESS.">
+<meta property="og:type" content="website">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WNBP4GNC');</script>
+<!-- End Google Tag Manager -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+@import url('https://fonts.cdnfonts.com/css/monument-extended');
+@import url('https://fonts.cdnfonts.com/css/gotham');
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #080808;
+  --navy: #001f3f;
+  --green: #12B76A;
+  --green-glow: rgba(18,183,106,0.55);
+  --white: #FFFFFF;
+  --white-dim: rgba(255,255,255,0.55);
+  --white-ghost: rgba(255,255,255,0.15);
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Noise overlay */
+#noise-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.032;
+}
+
+/* Scanlines */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(18,183,106,0.016) 0px,
+    rgba(18,183,106,0.016) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+/* Custom Cursor */
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease;
+}
+
+.cursor-ring {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(18,183,106,0.3);
+}
+
+.cursor-ring:nth-child(2) {
+  width: 28px;
+  height: 28px;
+  animation: sonarRing 2.4s ease-out infinite;
+}
+
+.cursor-ring:nth-child(3) {
+  width: 46px;
+  height: 46px;
+  animation: sonarRing 2.4s ease-out infinite 0.4s;
+}
+
+.cursor-ring:nth-child(4) {
+  width: 66px;
+  height: 66px;
+  animation: sonarRing 2.4s ease-out infinite 0.8s;
+}
+
+@keyframes sonarRing {
+  0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+}
+
+/* Page layout */
+.page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 28px 36px;
+  z-index: 10;
+}
+
+.header-logo {
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 5px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Center content */
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  z-index: 10;
+}
+
+/* Label */
+.section-label {
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.58rem;
+  letter-spacing: 5px;
+  color: rgba(255,255,255,0.25);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+/* Title */
+.main-title {
+  font-family: 'Monument Extended', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 36px;
+}
+
+/* Glass Card */
+.glass-card {
+  width: 100%;
+  background: rgba(255,255,255,0.014);
+  border: 1px solid rgba(255,255,255,0.055);
+  border-top: 1px solid rgba(18,183,106,0.42);
+  border-radius: 20px;
+  padding: 40px 36px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 40px rgba(18,183,106,0.04),
+    0 0 80px rgba(18,183,106,0.02),
+    0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* Form */
+.form-section {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.form-section.hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  position: absolute;
+}
+
+.form-group {
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.55rem;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.form-group input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(18,183,106,0.2);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 10px 0;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input::placeholder {
+  color: rgba(255,255,255,0.18);
+  font-weight: 300;
+}
+
+.form-group input:focus {
+  border-bottom-color: var(--green);
+  box-shadow: 0 2px 12px rgba(18,183,106,0.12);
+}
+
+/* CTA Button */
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #12B76A, #0da55e);
+  color: #001810;
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: glowPulse 2.5s ease-in-out infinite;
+  margin-top: 8px;
+}
+
+.cta-btn:hover {
+  transform: scale(1.02);
+}
+
+.cta-btn:active {
+  transform: scale(0.98);
+}
+
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.25),
+    transparent
+  );
+  transition: none;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.cta-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  animation: none;
+}
+
+.cta-btn:disabled::before {
+  animation: none;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(18,183,106,0.3),
+      0 0 40px rgba(18,183,106,0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(18,183,106,0.5),
+      0 0 60px rgba(18,183,106,0.25),
+      0 0 90px rgba(18,183,106,0.1);
+  }
+}
+
+/* Success section */
+.success-section {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.success-section.visible {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.success-title {
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.7rem, 2vw, 0.85rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.success-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  color: var(--white-dim);
+  margin-bottom: 32px;
+}
+
+/* Progress bar */
+.progress-container {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+  height: 8px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.055);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #12B76A, #0da55e);
+  transition: width 0.05s linear;
+  box-shadow: 0 0 12px rgba(18,183,106,0.4);
+}
+
+.progress-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--green);
+  margin-top: 10px;
+  margin-bottom: 28px;
+}
+
+/* Community button (hidden initially) */
+.community-btn-wrapper {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.community-btn-wrapper.visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+
+.footer-line {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(18,183,106,0.3), transparent);
+}
+
+.footer-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 0.63rem;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.14);
+}
+
+/* Error styling */
+.input-error {
+  border-bottom-color: #f04438 !important;
+}
+
+.error-msg {
+  color: #f04438;
+  font-size: 0.7rem;
+  font-family: 'Inter', sans-serif;
+  margin-top: 6px;
+  text-align: left;
+  display: none;
+}
+
+.error-msg.show {
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+  .header {
+    padding: 20px 20px;
+  }
+  .header-logo {
+    font-size: 0.8rem;
+  }
+  .glass-card {
+    padding: 28px 22px;
+    border-radius: 16px;
+  }
+  .main-title {
+    font-size: clamp(1.2rem, 5vw, 1.6rem);
+    margin-bottom: 28px;
+  }
+  .cta-btn {
+    padding: 14px 24px;
+    font-size: 0.72rem;
+  }
+  .success-title {
+    font-size: 0.68rem;
+  }
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .center-content {
+    max-width: 460px;
+  }
+  .glass-card {
+    padding: 34px 30px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WNBP4GNC"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Noise Canvas -->
+<canvas id="noise-canvas"></canvas>
+
+<!-- Scanlines -->
+<div class="scanlines"></div>
+
+<!-- Custom Cursor -->
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring-1"></div>
+<div class="cursor-ring" id="cursor-ring-2"></div>
+<div class="cursor-ring" id="cursor-ring-3"></div>
+
+<!-- Page -->
+<div class="page">
+
+  <!-- Header -->
+  <header class="header">
+    <span class="header-logo">IBB</span>
+  </header>
+
+  <!-- Center -->
+  <div class="center-content">
+    <span class="section-label">COMUNIDADE IBB</span>
+    <h1 class="main-title">ENTRE PARA A<br>COMUNIDADE</h1>
+
+    <div class="glass-card">
+      <!-- Form -->
+      <div class="form-section" id="form-section">
+        <div class="form-group">
+          <label for="nome">NOME</label>
+          <input type="text" id="nome" placeholder="Seu nome completo" autocomplete="name">
+          <div class="error-msg" id="nome-error">Informe seu nome</div>
+        </div>
+        <div class="form-group">
+          <label for="whatsapp">WHATSAPP</label>
+          <input type="tel" id="whatsapp" placeholder="(00) 00000-0000" autocomplete="tel" inputmode="numeric">
+          <div class="error-msg" id="whatsapp-error">Informe um WhatsApp válido</div>
+        </div>
+        <button class="cta-btn" id="btn-confirmar" disabled>CONFIRMAR</button>
+      </div>
+
+      <!-- Success -->
+      <div class="success-section" id="success-section">
+        <span class="success-title">SEU ACESSO À COMUNIDADE<br>ESTÁ QUASE GARANTIDO</span>
+        <span class="success-subtitle">CLIQUE ABAIXO E ENTRE NA COMUNIDADE</span>
+
+        <div class="progress-container">
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-label" id="progress-label">0%</div>
+        </div>
+
+        <div class="community-btn-wrapper" id="community-btn-wrapper">
+          <a href="https://chat.whatsapp.com/IbTMYMTCH45F5Wew25HpyX?mode=gi_t" target="_blank" rel="noopener" class="cta-btn">ENTRAR NA COMUNIDADE</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-line"></div>
+    <span class="footer-text">&copy; 2025 INSTITUTO BRASILEIRO DE BESS</span>
+  </footer>
+
+</div>
+
+<script>
+/* ── Noise Canvas ─────────────────────────────── */
+(function() {
+  var c = document.getElementById('noise-canvas');
+  var ctx = c.getContext('2d');
+  function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  function noise() {
+    var img = ctx.createImageData(c.width, c.height);
+    var d = img.data;
+    for (var i = 0; i < d.length; i += 4) {
+      var v = Math.random() * 255 | 0;
+      d[i] = d[i+1] = d[i+2] = v;
+      d[i+3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    requestAnimationFrame(noise);
+  }
+  noise();
+})();
+
+/* ── Custom Cursor ────────────────────────────── */
+(function() {
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+  document.body.style.cursor = 'none';
+  var dot = document.getElementById('cursor-dot');
+  var rings = [
+    document.getElementById('cursor-ring-1'),
+    document.getElementById('cursor-ring-2'),
+    document.getElementById('cursor-ring-3')
+  ];
+  var mx = -100, my = -100;
+  document.addEventListener('mousemove', function(e) {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top = my + 'px';
+    rings.forEach(function(r) { r.style.left = mx + 'px'; r.style.top = my + 'px'; });
+  });
+  document.addEventListener('mouseleave', function() {
+    dot.style.left = '-100px';
+    rings.forEach(function(r) { r.style.left = '-100px'; });
+  });
+  // Add cursor:none to all interactive elements
+  var style = document.createElement('style');
+  style.textContent = 'a,button,input,select,textarea,.cta-btn{cursor:none!important}';
+  document.head.appendChild(style);
+})();
+
+/* ── Phone Mask ───────────────────────────────── */
+var whatsInput = document.getElementById('whatsapp');
+whatsInput.addEventListener('input', function(e) {
+  var v = e.target.value.replace(/\D/g, '');
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length > 7) {
+    v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+  } else if (v.length > 2) {
+    v = '(' + v.slice(0,2) + ') ' + v.slice(2);
+  } else if (v.length > 0) {
+    v = '(' + v;
+  }
+  e.target.value = v;
+  validateForm();
+});
+
+/* ── Validation ───────────────────────────────── */
+var nomeInput = document.getElementById('nome');
+var btnConfirmar = document.getElementById('btn-confirmar');
+
+nomeInput.addEventListener('input', validateForm);
+
+function validateForm() {
+  var nameOk = nomeInput.value.trim().length >= 2;
+  var digits = whatsInput.value.replace(/\D/g, '');
+  var phoneOk = digits.length >= 10 && digits.length <= 11;
+  btnConfirmar.disabled = !(nameOk && phoneOk);
+}
+
+/* ── Submit ────────────────────────────────────── */
+btnConfirmar.addEventListener('click', function(e) {
+  e.preventDefault();
+  var nameOk = nomeInput.value.trim().length >= 2;
+  var digits = whatsInput.value.replace(/\D/g, '');
+  var phoneOk = digits.length >= 10 && digits.length <= 11;
+
+  var nomeErr = document.getElementById('nome-error');
+  var whatsErr = document.getElementById('whatsapp-error');
+
+  nomeErr.classList.toggle('show', !nameOk);
+  nomeInput.classList.toggle('input-error', !nameOk);
+  whatsErr.classList.toggle('show', !phoneOk);
+  whatsInput.classList.toggle('input-error', !phoneOk);
+
+  if (!nameOk || !phoneOk) return;
+
+  // Disable button to prevent double submit
+  btnConfirmar.disabled = true;
+  btnConfirmar.textContent = 'ENVIANDO...';
+
+  // Send to Google Sheets
+  fetch('https://script.google.com/macros/s/AKfycbxQfQCiHR1UQesQCNrYokPKTnSBtFGywrfXvsVMrU8Q89RpCPxQOs3y64yBFQaYTkcB/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nome: nomeInput.value.trim(),
+      whatsapp: whatsInput.value.trim()
+    })
+  }).catch(function() {});
+
+  // Push data to dataLayer
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'comunidade_form_submit',
+    user_name: nomeInput.value.trim(),
+    user_whatsapp: whatsInput.value.trim()
+  });
+
+  // Transition
+  var formSection = document.getElementById('form-section');
+  var successSection = document.getElementById('success-section');
+
+  formSection.classList.add('hidden');
+
+  setTimeout(function() {
+    successSection.style.display = 'flex';
+    // Force reflow
+    successSection.offsetHeight;
+    successSection.classList.add('visible');
+    startProgress();
+  }, 500);
+});
+
+/* ── Progress Bar ─────────────────────────────── */
+function startProgress() {
+  var fill = document.getElementById('progress-fill');
+  var label = document.getElementById('progress-label');
+  var btnWrapper = document.getElementById('community-btn-wrapper');
+  var target = 97;
+  var duration = 2500;
+  var start = performance.now();
+
+  function tick(now) {
+    var elapsed = now - start;
+    var t = Math.min(elapsed / duration, 1);
+    // ease-out: 1 - (1 - t)^3
+    var eased = 1 - Math.pow(1 - t, 3);
+    var current = Math.round(eased * target);
+    fill.style.width = (eased * target) + '%';
+    label.textContent = current + '%';
+
+    if (t < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      fill.style.width = target + '%';
+      label.textContent = target + '%';
+      // Show button
+      setTimeout(function() {
+        btnWrapper.classList.add('visible');
+      }, 300);
+    }
+  }
+  requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>
